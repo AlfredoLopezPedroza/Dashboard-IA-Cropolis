@@ -17,6 +17,7 @@ Genera: index.html en esta misma carpeta.
 import os
 import re
 import html
+import subprocess
 from pathlib import Path
 from datetime import datetime, timezone
 
@@ -25,6 +26,24 @@ ACTIVOS = RAIZ / "activos-negocios"
 AGENTES = RAIZ / "AGENTES-IA" / "AGENTES ACTIVOS"
 VAULT = RAIZ / "conocimiento" / "obsidian"
 SALIDA = Path(__file__).resolve().parent / "index.html"
+SALIDA_ESTADO = Path(__file__).resolve().parent / "estado.md"
+
+
+def commit_actual():
+    """Hash corto del último commit del repo del dashboard, si existe.
+    Es el commit ANTERIOR a este mismo estado.md (referencia de qué versión
+    del resto del repo se usó para generar esta foto) — no se inventa uno."""
+    try:
+        resultado = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            cwd=Path(__file__).resolve().parent,
+            capture_output=True, text=True, timeout=5,
+        )
+        if resultado.returncode == 0:
+            return resultado.stdout.strip()
+    except Exception:
+        pass
+    return None
 
 # Frentes conocidos, en el orden en que deben aparecer. El nombre de carpeta
 # real se busca por coincidencia de prefijo (F01, F02, ...) para no tronar
@@ -372,6 +391,82 @@ tr:hover td {{ background: rgba(0,180,255,.04); color: var(--text); }}
 """
 
 
+def construir_estado_md(frentes, agentes, vault_zonas, generado_en, commit_previo):
+    lineas = []
+    lineas.append("# ESTADO COMPARTIDO — IA-Crópolis")
+    lineas.append("")
+    lineas.append(f"Generado: {generado_en}")
+    lineas.append("Fuente: filesystem local IA-Crópolis")
+    lineas.append("Generador: generar_dashboard.py")
+    if commit_previo:
+        lineas.append(f"Commit de referencia (repo hasta antes de este archivo): {commit_previo}")
+    lineas.append("")
+
+    frentes_ok = sum(1 for f in frentes if f["existe"])
+    frentes_con_indice = sum(1 for f in frentes if f["existe"] and f["tiene_indice"])
+    agentes_con_bitacora = sum(1 for a in agentes if a["tiene_bitacora"])
+    vault_total_notas = sum(z["archivos_md"] for z in vault_zonas)
+
+    lineas.append("## ESTADO GLOBAL")
+    lineas.append("")
+    lineas.append(f"Frentes en disco: {frentes_ok}/{len(frentes)}")
+    lineas.append(f"Frentes con índice real: {frentes_con_indice}/{frentes_ok}")
+    lineas.append(f"Agentes de Capa 2 con bitácora: {agentes_con_bitacora}/{len(agentes)}")
+    lineas.append(f"Notas en el Vault de Obsidian: {vault_total_notas}")
+    lineas.append("")
+
+    lineas.append("## FRENTES")
+    lineas.append("")
+    for f in frentes:
+        lineas.append(f"### {f['prefijo']}")
+        if not f["existe"]:
+            lineas.append(f'No hay ninguna carpeta que empiece con "{f["prefijo"]}" en activos-negocios/ ahora mismo.')
+            lineas.append("")
+            continue
+        lineas.append(f"Nombre: {f['nombre_carpeta']}")
+        if f["tiene_indice"]:
+            for l in f["resumen"]:
+                lineas.append(l)
+        else:
+            lineas.append("Sin INDICE.md/README.md — sin descripción verificable en disco, no se inventó ninguna.")
+        lineas.append(f"Archivos .md: {f['archivos_md']}")
+        lineas.append(f"Última actividad: {fmt_fecha(f['ultima_modificacion'])}")
+        lineas.append("")
+
+    lineas.append("## AGENTES (Capa 2)")
+    lineas.append("")
+    for a in agentes:
+        lineas.append(f"### {a['nombre']}")
+        docs = []
+        if a["tiene_manual_cognitivo"]:
+            docs.append("Manual Cognitivo")
+        if a["tiene_skills"]:
+            docs.append("Skills")
+        if a["tiene_bitacora"]:
+            docs.append(f"Bitácora ({a['lineas_bitacora']} líneas)")
+        lineas.append(f"Documentos de identidad: {', '.join(docs) if docs else 'ninguno detectado'}")
+        lineas.append(f"Última actividad: {fmt_fecha(a['ultima_modificacion'])}")
+        lineas.append("")
+
+    lineas.append("## LABORATORIO COGNITIVO (Vault de Obsidian)")
+    lineas.append("")
+    for z in vault_zonas:
+        estado = f"{z['archivos_md']} notas" if z["existe"] else "no existe"
+        lineas.append(f"{z['zona']}: {estado}")
+    lineas.append("")
+
+    lineas.append("## FUENTE Y LIMITACIONES")
+    lineas.append("")
+    lineas.append("Este archivo es un snapshot derivado del filesystem local de IA-Crópolis.")
+    lineas.append("No representa un proceso en vivo — se regenera bajo demanda, no memoriza nada entre corridas.")
+    lineas.append("No autoriza modificaciones al ecosistema; es de solo lectura.")
+    lineas.append("Todo lo que aparece aquí sale directamente del disco. Si un dato no existe, se dice explícitamente en vez de inventarlo.")
+    lineas.append("El estado de cada Frente (validado / en construcción / pendiente) va dentro de su propia sección — no hay una lista aparte de \"bloqueos\" para evitar que se desincronice de la fuente real.")
+    lineas.append("")
+
+    return "\n".join(lineas)
+
+
 def main():
     frentes = [datos_frente(p) for p in FRENTES_ORDEN]
     agentes = []
@@ -382,9 +477,16 @@ def main():
     vault_zonas = datos_vault()
     generado_en = datetime.now().strftime("%Y-%m-%d %H:%M")
 
+    commit_previo = commit_actual()
+
     salida_html = construir_html(frentes, agentes, vault_zonas, generado_en)
     SALIDA.write_text(salida_html, encoding="utf-8")
+
+    salida_estado = construir_estado_md(frentes, agentes, vault_zonas, generado_en, commit_previo)
+    SALIDA_ESTADO.write_text(salida_estado, encoding="utf-8")
+
     print(f"Dashboard generado en: {SALIDA}")
+    print(f"Estado compartido generado en: {SALIDA_ESTADO}")
     print(f"Frentes detectados: {sum(1 for f in frentes if f['existe'])} / {len(FRENTES_ORDEN)}")
     print(f"Agentes detectados: {len(agentes)}")
 
