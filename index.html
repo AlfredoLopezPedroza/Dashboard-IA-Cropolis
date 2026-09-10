@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sala de Control · IA-Crópolis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --verde: #0F6B4C; --verde-oscuro: #0A4A34; --verde-suave: #E7F3EE;
+  --gris-950: #1B1F1D; --gris-700: #4A524D; --gris-500: #7C857F;
+  --gris-200: #E4E7E5; --gris-100: #F3F5F4; --blanco: #FFFFFF;
+  --amarillo: #B7791F; --amarillo-bg: #FBF2E3;
+  --rojo: #9C3B2E; --rojo-bg: #F8EBE9;
+  --font: 'Inter', -apple-system, sans-serif; --font-d: 'Manrope', var(--font);
+}
+* { box-sizing: border-box; }
+body { margin:0; font-family: var(--font); color: var(--gris-950); background: var(--blanco); line-height: 1.5; }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+h1,h2,h3 { font-family: var(--font-d); font-weight: 800; margin: 0 0 10px; }
+.header { background: linear-gradient(180deg, var(--verde-suave), var(--blanco)); padding: 40px 0 28px; border-bottom: 1px solid var(--gris-200); }
+.header h1 { font-size: clamp(24px,5vw,34px); }
+.header p { color: var(--gris-700); font-size: 13.5px; margin: 4px 0; }
+.seccion { padding: 36px 0; }
+.seccion.alt { background: var(--gris-100); }
+.eyebrow { font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--verde); margin-bottom: 6px; }
+.tarjetas { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 20px; }
+@media (min-width: 720px) { .tarjetas { grid-template-columns: repeat(3,1fr); } }
+.tarjeta { background: var(--blanco); border: 1px solid var(--gris-200); border-radius: 14px; padding: 20px; box-shadow: 0 4px 16px rgba(27,31,29,.06); }
+.tarjeta-ausente { opacity: .7; border-style: dashed; }
+.tarjeta-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.numero { font-size:13px; font-weight:800; color:var(--verde); background:var(--verde-suave); padding:3px 10px; border-radius:999px; }
+.chip { font-size:11px; font-weight:700; padding:3px 9px; border-radius:999px; }
+.chip-ok { background: var(--verde-suave); color: var(--verde-oscuro); }
+.chip-alerta { background: var(--amarillo-bg); color: var(--amarillo); }
+.chip-ausente { background: var(--rojo-bg); color: var(--rojo); }
+.tarjeta h3 { font-size: 16px; margin-bottom: 10px; }
+.resumen { margin: 0 0 12px; padding-left: 18px; font-size: 13px; color: var(--gris-700); }
+.resumen li { margin-bottom: 4px; }
+.nota { font-size: 12.5px; color: var(--gris-500); font-style: italic; }
+.tarjeta-footer { display:flex; flex-wrap:wrap; gap:8px; padding-top:10px; border-top:1px solid var(--gris-200); margin-top: 8px;}
+.meta { font-size: 11.5px; font-weight:600; color: var(--gris-700); background: var(--gris-100); padding:4px 8px; border-radius:6px; }
+table { width:100%; border-collapse: collapse; margin-top: 16px; font-size: 13.5px; background: var(--blanco); border-radius: 12px; overflow: hidden; border: 1px solid var(--gris-200); }
+th { background: var(--verde-oscuro); color: #fff; text-align:left; padding: 10px 12px; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; }
+td { padding: 10px 12px; border-bottom: 1px solid var(--gris-200); color: var(--gris-700); }
+tr:last-child td { border-bottom: none; }
+tr:nth-child(even) td { background: var(--gris-100); }
+.fila-label { font-weight: 700; color: var(--gris-950); }
+.fila-ausente td { color: var(--gris-500); font-style: italic; }
+.footer { text-align:center; padding: 24px 0; color: var(--gris-500); font-size: 12px; border-top: 1px solid var(--gris-200); }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="wrap">
+    <p class="eyebrow">🐝 Sala de Control · IA-Crópolis</p>
+    <h1>Dashboard General del Ecosistema</h1>
+    <p>Generado bajo demanda — no es un proceso en vivo. Refleja el disco real al momento en que se corrió el generador. Sujeto a Kaizen-Ouroboros: se regenera cuando se pide, no memoriza entre corridas.</p>
+    <p><strong>Última generación:</strong> 2026-09-09 20:15</p>
+  </div>
+</header>
+
+<main>
+  <section class="seccion">
+    <div class="wrap">
+      <p class="eyebrow">Frentes financieros</p>
+      <h2>Los 6 Frentes de activos-negocios/</h2>
+      <div class="tarjetas">
+        
+        <article class="tarjeta">
+          <div class="tarjeta-head"><span class="numero">F01</span><span class="chip chip-alerta">Sin INDICE.md/README.md — revisar manualmente</span></div>
+          <h3>F01-Gestor-IA Vehicular</h3>
+          <p class='nota'>Sin descripción legible en disco — no se inventó ninguna.</p>
+          <div class="tarjeta-footer">
+            <span class="meta">📄 4 archivos .md</span>
+            <span class="meta">🕒 Última actividad: 2026-09-09</span>
+          </div>
+        </article>
+        <article class="tarjeta">
+          <div class="tarjeta-head"><span class="numero">F02</span><span class="chip chip-alerta">Sin INDICE.md/README.md — revisar manualmente</span></div>
+          <h3>F02-Love-Sex</h3>
+          <p class='nota'>Sin descripción legible en disco — no se inventó ninguna.</p>
+          <div class="tarjeta-footer">
+            <span class="meta">📄 191 archivos .md</span>
+            <span class="meta">🕒 Última actividad: 2026-09-08</span>
+          </div>
+        </article>
+        <article class="tarjeta">
+          <div class="tarjeta-head"><span class="numero">F03</span><span class="chip chip-alerta">Sin INDICE.md/README.md — revisar manualmente</span></div>
+          <h3>F03-Soluciones-Patrimoniales</h3>
+          <p class='nota'>Sin descripción legible en disco — no se inventó ninguna.</p>
+          <div class="tarjeta-footer">
+            <span class="meta">📄 2 archivos .md</span>
+            <span class="meta">🕒 Última actividad: 2026-08-24</span>
+          </div>
+        </article>
+        <article class="tarjeta">
+          <div class="tarjeta-head"><span class="numero">F04</span><span class="chip chip-ok">Con INDICE.md</span></div>
+          <h3>F04-VERDALI</h3>
+          <ul class='resumen'><li>F04 — VERDALI (Salud Naturista)</li><li>- Propósito: Escalar la distribución de suplementos naturistas con asesoría personalizada de Lili.</li><li>- Estado: MVP comercial en construcción — &quot;KIT Salud Masculina VERDALI&quot;.</li><li>- Producto activo: KIT Salud Masculina VERDALI — Fórmula de Apoyo Nutricional (Saw Palmetto, Ortiga, Zarzaparrilla, Polen de abejas, Zinc) + Gel VERDALI (Maguey, Alcanfor, Salicilato) + Guía Digital de Rutina.</li><li>- Precio: $499 MXN, envío incluido.</li><li>- Operadora: Lili — 40 años de experiencia naturista en Morelos · tienda física · logística local y nacional. WhatsApp de atención a clientes: +52 1 777 154 8892.</li></ul>
+          <div class="tarjeta-footer">
+            <span class="meta">📄 14 archivos .md</span>
+            <span class="meta">🕒 Última actividad: 2026-09-06</span>
+          </div>
+        </article>
+        <article class="tarjeta">
+          <div class="tarjeta-head"><span class="numero">F05</span><span class="chip chip-alerta">Sin INDICE.md/README.md — revisar manualmente</span></div>
+          <h3>F05- Gestor-IA Sanitaria</h3>
+          <p class='nota'>Sin descripción legible en disco — no se inventó ninguna.</p>
+          <div class="tarjeta-footer">
+            <span class="meta">📄 5 archivos .md</span>
+            <span class="meta">🕒 Última actividad: 2026-09-08</span>
+          </div>
+        </article>
+        <article class="tarjeta">
+          <div class="tarjeta-head"><span class="numero">F06</span><span class="chip chip-alerta">Sin INDICE.md/README.md — revisar manualmente</span></div>
+          <h3>F06- Gestor-IA Docu-Express</h3>
+          <p class='nota'>Sin descripción legible en disco — no se inventó ninguna.</p>
+          <div class="tarjeta-footer">
+            <span class="meta">📄 0 archivos .md</span>
+            <span class="meta">🕒 Última actividad: 2026-08-10</span>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="seccion alt">
+    <div class="wrap">
+      <p class="eyebrow">Capa 2</p>
+      <h2>Agentes ejecutores — estado de memoria</h2>
+      <table>
+        <thead><tr><th>Agente</th><th>Documentos de identidad detectados</th><th>Última actividad</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="fila-label">ANTIGRAVITY</td>
+          <td>Manual Cognitivo · Skills · Bitácora (307 líneas)</td>
+          <td>2026-09-10</td>
+        </tr>
+        <tr>
+          <td class="fila-label">CLAUDE CODE</td>
+          <td>Manual Cognitivo · Skills · Bitácora (696 líneas)</td>
+          <td>2026-09-09</td>
+        </tr>
+        <tr>
+          <td class="fila-label">CLINE</td>
+          <td>Manual Cognitivo · Skills · Bitácora (912 líneas)</td>
+          <td>2026-09-10</td>
+        </tr>
+        <tr>
+          <td class="fila-label">HERMES</td>
+          <td>Manual Cognitivo · Skills · Bitácora (254 líneas)</td>
+          <td>2026-08-31</td>
+        </tr>
+        <tr>
+          <td class="fila-label">QWEN</td>
+          <td>Manual Cognitivo · Skills · Bitácora (381 líneas)</td>
+          <td>2026-07-30</td>
+        </tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="seccion">
+    <div class="wrap">
+      <p class="eyebrow">Laboratorio Cognitivo</p>
+      <h2>Vault de Obsidian — notas por zona</h2>
+      <table>
+        <thead><tr><th>Zona</th><th>Estado</th></tr></thead>
+        <tbody><tr class=''><td class='fila-label'>00_CORE</td><td>5 notas</td></tr><tr class=''><td class='fila-label'>01_FUENTES</td><td>3 notas</td></tr><tr class=''><td class='fila-label'>02_IDEAS_ATOMICAS</td><td>75 notas</td></tr><tr class=''><td class='fila-label'>03_MOLECULAS_COGNITIVAS</td><td>2 notas</td></tr><tr class=''><td class='fila-label'>04_OPORTUNIDADES</td><td>1 notas</td></tr><tr class=''><td class='fila-label'>05_EXPERIMENTOS</td><td>1 notas</td></tr><tr class=''><td class='fila-label'>06_APRENDIZAJES</td><td>1 notas</td></tr><tr class=''><td class='fila-label'>07_CONOCIMIENTO_VALIDADO</td><td>1 notas</td></tr><tr class=''><td class='fila-label'>08_COMPETENCIAS</td><td>1 notas</td></tr><tr class=''><td class='fila-label'>09_FRENTES_Y_ACTIVOS</td><td>1 notas</td></tr><tr class=''><td class='fila-label'>99_ARCHIVO</td><td>1 notas</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">Generado automáticamente por <code>generar_dashboard.py</code> · IA-Crópolis</div>
+</footer>
+
+</body>
+</html>
