@@ -41,11 +41,15 @@ def buscar_carpeta_frente(prefijo):
     return None
 
 
+DIRS_EXCLUIDOS = {"node_modules", ".git", "dist", "build"}
+
+
 def contar_archivos(carpeta, extension=None):
     if not carpeta or not carpeta.exists():
         return 0
     total = 0
-    for _, _, archivos in os.walk(carpeta):
+    for raiz, dirs, archivos in os.walk(carpeta):
+        dirs[:] = [d for d in dirs if d not in DIRS_EXCLUIDOS]
         for a in archivos:
             if extension is None or a.lower().endswith(extension):
                 total += 1
@@ -56,7 +60,8 @@ def fecha_modificacion_mas_reciente(carpeta):
     if not carpeta or not carpeta.exists():
         return None
     mas_reciente = None
-    for raiz, _, archivos in os.walk(carpeta):
+    for raiz, dirs, archivos in os.walk(carpeta):
+        dirs[:] = [d for d in dirs if d not in DIRS_EXCLUIDOS]
         for a in archivos:
             ruta = Path(raiz) / a
             try:
