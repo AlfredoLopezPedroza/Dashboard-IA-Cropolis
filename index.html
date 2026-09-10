@@ -6,60 +6,83 @@
 <title>Sala de Control · IA-Crópolis</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 :root {
-  --verde: #0F6B4C; --verde-oscuro: #0A4A34; --verde-suave: #E7F3EE;
-  --gris-950: #1B1F1D; --gris-700: #4A524D; --gris-500: #7C857F;
-  --gris-200: #E4E7E5; --gris-100: #F3F5F4; --blanco: #FFFFFF;
-  --amarillo: #B7791F; --amarillo-bg: #FBF2E3;
-  --rojo: #9C3B2E; --rojo-bg: #F8EBE9;
-  --font: 'Inter', -apple-system, sans-serif; --font-d: 'Manrope', var(--font);
+  --bg-deep:#060a14; --bg-mid:#0a1225; --bg-card:rgba(8,16,36,0.7);
+  --border:rgba(0,180,255,0.14); --border-hi:rgba(0,220,255,0.4);
+  --cyan:#00e0ff; --cyan2:#0af; --gold:#ffd866;
+  --green:#00ff88; --red:#ff4455; --orange:#ffaa00;
+  --text:#c8d6e5; --text-dim:#5a6d80; --text-bright:#eef4fa;
+  --font-ui:'Rajdhani',sans-serif; --font-brand:'Orbitron',sans-serif; --font-mono:'Share Tech Mono',monospace;
 }
 * { box-sizing: border-box; }
-body { margin:0; font-family: var(--font); color: var(--gris-950); background: var(--blanco); line-height: 1.5; }
+body { margin:0; font-family: var(--font-ui); font-size:16px; color: var(--text); background: var(--bg-deep); line-height: 1.6;
+  background-image:
+    linear-gradient(rgba(0,140,220,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,140,220,0.05) 1px, transparent 1px);
+  background-size: 42px 42px;
+}
 .wrap { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
-h1,h2,h3 { font-family: var(--font-d); font-weight: 800; margin: 0 0 10px; }
-.header { background: linear-gradient(180deg, var(--verde-suave), var(--blanco)); padding: 40px 0 28px; border-bottom: 1px solid var(--gris-200); }
-.header h1 { font-size: clamp(24px,5vw,34px); }
-.header p { color: var(--gris-700); font-size: 13.5px; margin: 4px 0; }
-.seccion { padding: 36px 0; }
-.seccion.alt { background: var(--gris-100); }
-.eyebrow { font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--verde); margin-bottom: 6px; }
+h1,h2,h3 { font-family: var(--font-brand); font-weight: 700; margin: 0 0 10px; color: var(--text-bright); }
+code { font-family: var(--font-mono); }
+.header { background: linear-gradient(180deg, rgba(0,140,220,.08), transparent); padding: 44px 0 30px; border-bottom: 1px solid var(--border); position:relative; overflow:hidden; }
+.header::after { content:''; position:absolute; bottom:-1px; left:0; width:100%; height:1px; background:linear-gradient(90deg,transparent,var(--cyan),var(--gold),var(--cyan),transparent); }
+.header h1 { font-size: clamp(22px,4.5vw,32px); letter-spacing: 1px; background:linear-gradient(135deg,var(--gold),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.header p { color: var(--text-dim); font-size: 13.5px; margin: 4px 0; max-width: 760px; }
+.header p strong { color: var(--text); }
+.eyebrow { font-family: var(--font-mono); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .18em; color: var(--cyan); margin-bottom: 8px; }
+.resumen-global { display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
+.pill { font-family: var(--font-mono); font-size:11.5px; padding:6px 12px; border:1px solid var(--border); border-radius:999px; background:var(--bg-card); color:var(--text); }
+.pill b { color: var(--cyan); }
+.seccion { padding: 40px 0; }
+.seccion.alt { background: linear-gradient(180deg, rgba(0,60,110,.05), transparent); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
 .tarjetas { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 20px; }
 @media (min-width: 720px) { .tarjetas { grid-template-columns: repeat(3,1fr); } }
-.tarjeta { background: var(--blanco); border: 1px solid var(--gris-200); border-radius: 14px; padding: 20px; box-shadow: 0 4px 16px rgba(27,31,29,.06); }
-.tarjeta-ausente { opacity: .7; border-style: dashed; }
-.tarjeta-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
-.numero { font-size:13px; font-weight:800; color:var(--verde); background:var(--verde-suave); padding:3px 10px; border-radius:999px; }
-.chip { font-size:11px; font-weight:700; padding:3px 9px; border-radius:999px; }
-.chip-ok { background: var(--verde-suave); color: var(--verde-oscuro); }
-.chip-alerta { background: var(--amarillo-bg); color: var(--amarillo); }
-.chip-ausente { background: var(--rojo-bg); color: var(--rojo); }
-.tarjeta h3 { font-size: 16px; margin-bottom: 10px; }
-.resumen { margin: 0 0 12px; padding-left: 18px; font-size: 13px; color: var(--gris-700); }
+.tarjeta { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; backdrop-filter: blur(6px); position:relative; overflow:hidden; transition: border-color .25s, transform .25s; }
+.tarjeta::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--cyan2),transparent); opacity:.6; }
+.tarjeta:hover { border-color: var(--border-hi); transform: translateY(-2px); }
+.tarjeta-ausente { opacity: .55; border-style: dashed; }
+.tarjeta-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:8px; flex-wrap:wrap; }
+.numero { font-family: var(--font-brand); font-size:12px; font-weight:700; letter-spacing:1px; color:var(--bg-deep); background:var(--cyan); padding:3px 10px; border-radius:6px; }
+.chip { display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:10.5px; font-weight:600; padding:3px 10px; border-radius:999px; border:1px solid var(--border); }
+.chip-dot { width:6px; height:6px; border-radius:50%; display:inline-block; }
+.chip-ok { color: var(--green); } .chip-ok .chip-dot { background:var(--green); box-shadow:0 0 6px var(--green); }
+.chip-alerta { color: var(--orange); } .chip-alerta .chip-dot { background:var(--orange); box-shadow:0 0 6px var(--orange); }
+.chip-ausente { color: var(--red); } .chip-ausente .chip-dot { background:var(--red); box-shadow:0 0 6px var(--red); }
+.tarjeta h3 { font-family: var(--font-ui); font-size: 17px; font-weight:700; margin-bottom: 10px; color: var(--text-bright); }
+.resumen { margin: 0 0 12px; padding-left: 18px; font-size: 13.5px; color: var(--text-dim); }
 .resumen li { margin-bottom: 4px; }
-.nota { font-size: 12.5px; color: var(--gris-500); font-style: italic; }
-.tarjeta-footer { display:flex; flex-wrap:wrap; gap:8px; padding-top:10px; border-top:1px solid var(--gris-200); margin-top: 8px;}
-.meta { font-size: 11.5px; font-weight:600; color: var(--gris-700); background: var(--gris-100); padding:4px 8px; border-radius:6px; }
-table { width:100%; border-collapse: collapse; margin-top: 16px; font-size: 13.5px; background: var(--blanco); border-radius: 12px; overflow: hidden; border: 1px solid var(--gris-200); }
-th { background: var(--verde-oscuro); color: #fff; text-align:left; padding: 10px 12px; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; }
-td { padding: 10px 12px; border-bottom: 1px solid var(--gris-200); color: var(--gris-700); }
+.nota { font-size: 12.5px; color: var(--text-dim); font-style: italic; }
+.tarjeta-footer { display:flex; flex-wrap:wrap; gap:8px; padding-top:12px; border-top:1px solid var(--border); margin-top: 10px; }
+.meta { font-family: var(--font-mono); font-size: 11px; font-weight:600; color: var(--text-dim); background: rgba(255,255,255,.03); padding:4px 8px; border-radius:6px; }
+table { width:100%; border-collapse: collapse; margin-top: 18px; font-size: 13.5px; background: var(--bg-card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+th { background: rgba(0,180,255,.08); color: var(--cyan); text-align:left; padding: 11px 14px; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; border-bottom:1px solid var(--border); }
+td { padding: 11px 14px; border-bottom: 1px solid rgba(255,255,255,.04); color: var(--text-dim); }
 tr:last-child td { border-bottom: none; }
-tr:nth-child(even) td { background: var(--gris-100); }
-.fila-label { font-weight: 700; color: var(--gris-950); }
-.fila-ausente td { color: var(--gris-500); font-style: italic; }
-.footer { text-align:center; padding: 24px 0; color: var(--gris-500); font-size: 12px; border-top: 1px solid var(--gris-200); }
+tr:hover td { background: rgba(0,180,255,.04); color: var(--text); }
+.fila-label { font-weight: 700; color: var(--text-bright); display:flex; align-items:center; gap:8px; }
+.row-dot { width:7px; height:7px; border-radius:50%; display:inline-block; flex-shrink:0; }
+.dot-on { background: var(--green); box-shadow:0 0 5px var(--green); }
+.dot-off { background: var(--text-dim); }
+.fila-ausente td { color: var(--text-dim); font-style: italic; opacity:.6; }
+.footer { text-align:center; padding: 26px 0; color: var(--text-dim); font-family: var(--font-mono); font-size: 11px; border-top: 1px solid var(--border); }
 </style>
 </head>
 <body>
 
 <header class="header">
   <div class="wrap">
-    <p class="eyebrow">🐝 Sala de Control · IA-Crópolis</p>
+    <p class="eyebrow">◈ Sala de Control · IA-Crópolis</p>
     <h1>Dashboard General del Ecosistema</h1>
-    <p>Generado bajo demanda — no es un proceso en vivo. Refleja el disco real al momento en que se corrió el generador. Sujeto a Kaizen-Ouroboros: se regenera cuando se pide, no memoriza entre corridas.</p>
-    <p><strong>Última generación:</strong> 2026-09-09 20:15</p>
+    <p>Generado bajo demanda a partir del disco real — no es un proceso en vivo ni memoriza nada entre corridas. Sujeto a Kaizen-Ouroboros: se regenera cuando se pide.</p>
+    <p><strong>Última generación:</strong> 2026-09-09 23:22</p>
+    <div class="resumen-global">
+      <span class="pill">Frentes en disco: <b>6/6</b></span>
+      <span class="pill">Con índice real: <b>1/6</b></span>
+      <span class="pill">Agentes con bitácora: <b>5/5</b></span>
+      <span class="pill">Notas en el Vault: <b>92</b></span>
+    </div>
   </div>
 </header>
 
@@ -71,16 +94,16 @@ tr:nth-child(even) td { background: var(--gris-100); }
       <div class="tarjetas">
         
         <article class="tarjeta">
-          <div class="tarjeta-head"><span class="numero">F01</span><span class="chip chip-alerta">Sin INDICE.md/README.md — revisar manualmente</span></div>
+          <div class="tarjeta-head"><span class="numero">F01</span><span class="chip chip-alerta"><i class="chip-dot"></i>Sin INDICE.md/README.md — revisar manualmente</span></div>
           <h3>F01-Gestor-IA Vehicular</h3>
           <p class='nota'>Sin descripción legible en disco — no se inventó ninguna.</p>
           <div class="tarjeta-footer">
             <span class="meta">📄 4 archivos .md</span>
-            <span class="meta">🕒 Última actividad: 2026-09-09</span>
+            <span class="meta">🕒 Última actividad: 2026-09-10</span>
           </div>
         </article>
         <article class="tarjeta">
-          <div class="tarjeta-head"><span class="numero">F02</span><span class="chip chip-alerta">Sin INDICE.md/README.md — revisar manualmente</span></div>
+          <div class="tarjeta-head"><span class="numero">F02</span><span class="chip chip-alerta"><i class="chip-dot"></i>Sin INDICE.md/README.md — revisar manualmente</span></div>
           <h3>F02-Love-Sex</h3>
           <p class='nota'>Sin descripción legible en disco — no se inventó ninguna.</p>
           <div class="tarjeta-footer">
@@ -89,7 +112,7 @@ tr:nth-child(even) td { background: var(--gris-100); }
           </div>
         </article>
         <article class="tarjeta">
-          <div class="tarjeta-head"><span class="numero">F03</span><span class="chip chip-alerta">Sin INDICE.md/README.md — revisar manualmente</span></div>
+          <div class="tarjeta-head"><span class="numero">F03</span><span class="chip chip-alerta"><i class="chip-dot"></i>Sin INDICE.md/README.md — revisar manualmente</span></div>
           <h3>F03-Soluciones-Patrimoniales</h3>
           <p class='nota'>Sin descripción legible en disco — no se inventó ninguna.</p>
           <div class="tarjeta-footer">
@@ -98,7 +121,7 @@ tr:nth-child(even) td { background: var(--gris-100); }
           </div>
         </article>
         <article class="tarjeta">
-          <div class="tarjeta-head"><span class="numero">F04</span><span class="chip chip-ok">Con INDICE.md</span></div>
+          <div class="tarjeta-head"><span class="numero">F04</span><span class="chip chip-ok"><i class="chip-dot"></i>Con INDICE.md</span></div>
           <h3>F04-VERDALI</h3>
           <ul class='resumen'><li>F04 — VERDALI (Salud Naturista)</li><li>- Propósito: Escalar la distribución de suplementos naturistas con asesoría personalizada de Lili.</li><li>- Estado: MVP comercial en construcción — &quot;KIT Salud Masculina VERDALI&quot;.</li><li>- Producto activo: KIT Salud Masculina VERDALI — Fórmula de Apoyo Nutricional (Saw Palmetto, Ortiga, Zarzaparrilla, Polen de abejas, Zinc) + Gel VERDALI (Maguey, Alcanfor, Salicilato) + Guía Digital de Rutina.</li><li>- Precio: $499 MXN, envío incluido.</li><li>- Operadora: Lili — 40 años de experiencia naturista en Morelos · tienda física · logística local y nacional. WhatsApp de atención a clientes: +52 1 777 154 8892.</li></ul>
           <div class="tarjeta-footer">
@@ -107,7 +130,7 @@ tr:nth-child(even) td { background: var(--gris-100); }
           </div>
         </article>
         <article class="tarjeta">
-          <div class="tarjeta-head"><span class="numero">F05</span><span class="chip chip-alerta">Sin INDICE.md/README.md — revisar manualmente</span></div>
+          <div class="tarjeta-head"><span class="numero">F05</span><span class="chip chip-alerta"><i class="chip-dot"></i>Sin INDICE.md/README.md — revisar manualmente</span></div>
           <h3>F05- Gestor-IA Sanitaria</h3>
           <p class='nota'>Sin descripción legible en disco — no se inventó ninguna.</p>
           <div class="tarjeta-footer">
@@ -116,7 +139,7 @@ tr:nth-child(even) td { background: var(--gris-100); }
           </div>
         </article>
         <article class="tarjeta">
-          <div class="tarjeta-head"><span class="numero">F06</span><span class="chip chip-alerta">Sin INDICE.md/README.md — revisar manualmente</span></div>
+          <div class="tarjeta-head"><span class="numero">F06</span><span class="chip chip-alerta"><i class="chip-dot"></i>Sin INDICE.md/README.md — revisar manualmente</span></div>
           <h3>F06- Gestor-IA Docu-Express</h3>
           <p class='nota'>Sin descripción legible en disco — no se inventó ninguna.</p>
           <div class="tarjeta-footer">
@@ -136,27 +159,27 @@ tr:nth-child(even) td { background: var(--gris-100); }
         <thead><tr><th>Agente</th><th>Documentos de identidad detectados</th><th>Última actividad</th></tr></thead>
         <tbody>
         <tr>
-          <td class="fila-label">ANTIGRAVITY</td>
+          <td class="fila-label"><i class="row-dot dot-on"></i>ANTIGRAVITY</td>
           <td>Manual Cognitivo · Skills · Bitácora (307 líneas)</td>
           <td>2026-09-10</td>
         </tr>
         <tr>
-          <td class="fila-label">CLAUDE CODE</td>
+          <td class="fila-label"><i class="row-dot dot-on"></i>CLAUDE CODE</td>
           <td>Manual Cognitivo · Skills · Bitácora (696 líneas)</td>
           <td>2026-09-09</td>
         </tr>
         <tr>
-          <td class="fila-label">CLINE</td>
+          <td class="fila-label"><i class="row-dot dot-on"></i>CLINE</td>
           <td>Manual Cognitivo · Skills · Bitácora (912 líneas)</td>
           <td>2026-09-10</td>
         </tr>
         <tr>
-          <td class="fila-label">HERMES</td>
+          <td class="fila-label"><i class="row-dot dot-on"></i>HERMES</td>
           <td>Manual Cognitivo · Skills · Bitácora (254 líneas)</td>
           <td>2026-08-31</td>
         </tr>
         <tr>
-          <td class="fila-label">QWEN</td>
+          <td class="fila-label"><i class="row-dot dot-on"></i>QWEN</td>
           <td>Manual Cognitivo · Skills · Bitácora (381 líneas)</td>
           <td>2026-07-30</td>
         </tr></tbody>
@@ -170,14 +193,14 @@ tr:nth-child(even) td { background: var(--gris-100); }
       <h2>Vault de Obsidian — notas por zona</h2>
       <table>
         <thead><tr><th>Zona</th><th>Estado</th></tr></thead>
-        <tbody><tr class=''><td class='fila-label'>00_CORE</td><td>5 notas</td></tr><tr class=''><td class='fila-label'>01_FUENTES</td><td>3 notas</td></tr><tr class=''><td class='fila-label'>02_IDEAS_ATOMICAS</td><td>75 notas</td></tr><tr class=''><td class='fila-label'>03_MOLECULAS_COGNITIVAS</td><td>2 notas</td></tr><tr class=''><td class='fila-label'>04_OPORTUNIDADES</td><td>1 notas</td></tr><tr class=''><td class='fila-label'>05_EXPERIMENTOS</td><td>1 notas</td></tr><tr class=''><td class='fila-label'>06_APRENDIZAJES</td><td>1 notas</td></tr><tr class=''><td class='fila-label'>07_CONOCIMIENTO_VALIDADO</td><td>1 notas</td></tr><tr class=''><td class='fila-label'>08_COMPETENCIAS</td><td>1 notas</td></tr><tr class=''><td class='fila-label'>09_FRENTES_Y_ACTIVOS</td><td>1 notas</td></tr><tr class=''><td class='fila-label'>99_ARCHIVO</td><td>1 notas</td></tr></tbody>
+        <tbody><tr class=''><td class='fila-label'><i class='row-dot dot-on'></i>00_CORE</td><td>5 notas</td></tr><tr class=''><td class='fila-label'><i class='row-dot dot-on'></i>01_FUENTES</td><td>3 notas</td></tr><tr class=''><td class='fila-label'><i class='row-dot dot-on'></i>02_IDEAS_ATOMICAS</td><td>75 notas</td></tr><tr class=''><td class='fila-label'><i class='row-dot dot-on'></i>03_MOLECULAS_COGNITIVAS</td><td>2 notas</td></tr><tr class=''><td class='fila-label'><i class='row-dot dot-on'></i>04_OPORTUNIDADES</td><td>1 notas</td></tr><tr class=''><td class='fila-label'><i class='row-dot dot-on'></i>05_EXPERIMENTOS</td><td>1 notas</td></tr><tr class=''><td class='fila-label'><i class='row-dot dot-on'></i>06_APRENDIZAJES</td><td>1 notas</td></tr><tr class=''><td class='fila-label'><i class='row-dot dot-on'></i>07_CONOCIMIENTO_VALIDADO</td><td>1 notas</td></tr><tr class=''><td class='fila-label'><i class='row-dot dot-on'></i>08_COMPETENCIAS</td><td>1 notas</td></tr><tr class=''><td class='fila-label'><i class='row-dot dot-on'></i>09_FRENTES_Y_ACTIVOS</td><td>1 notas</td></tr><tr class=''><td class='fila-label'><i class='row-dot dot-on'></i>99_ARCHIVO</td><td>1 notas</td></tr></tbody>
       </table>
     </div>
   </section>
 </main>
 
 <footer class="footer">
-  <div class="wrap">Generado automáticamente por <code>generar_dashboard.py</code> · IA-Crópolis</div>
+  <div class="wrap">GENERADO POR generar_dashboard.py · IA-CRÓPOLIS · DATOS REALES, SIN INVENCIÓN</div>
 </footer>
 
 </body>

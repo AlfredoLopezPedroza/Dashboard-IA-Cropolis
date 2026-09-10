@@ -176,12 +176,17 @@ def esc(s):
 
 
 def construir_html(frentes, agentes, vault_zonas, generado_en):
+    frentes_ok = sum(1 for f in frentes if f["existe"])
+    frentes_con_indice = sum(1 for f in frentes if f["existe"] and f["tiene_indice"])
+    agentes_con_bitacora = sum(1 for a in agentes if a["tiene_bitacora"])
+    vault_total_notas = sum(z["archivos_md"] for z in vault_zonas)
+
     tarjetas_frentes = []
     for f in frentes:
         if not f["existe"]:
             tarjetas_frentes.append(f"""
             <article class="tarjeta tarjeta-ausente">
-              <div class="tarjeta-head"><span class="numero">{esc(f['prefijo'])}</span><span class="chip chip-ausente">No encontrado en disco</span></div>
+              <div class="tarjeta-head"><span class="numero">{esc(f['prefijo'])}</span><span class="chip chip-ausente"><i class="chip-dot"></i>No encontrado en disco</span></div>
               <p class="nota">No hay ninguna carpeta que empiece con "{esc(f['prefijo'])}" en <code>activos-negocios/</code> ahora mismo.</p>
             </article>""")
             continue
@@ -197,7 +202,7 @@ def construir_html(frentes, agentes, vault_zonas, generado_en):
 
         tarjetas_frentes.append(f"""
         <article class="tarjeta">
-          <div class="tarjeta-head"><span class="numero">{esc(f['prefijo'])}</span><span class="chip {chip}">{chip_txt}</span></div>
+          <div class="tarjeta-head"><span class="numero">{esc(f['prefijo'])}</span><span class="chip {chip}"><i class="chip-dot"></i>{chip_txt}</span></div>
           <h3>{esc(f['nombre_carpeta'])}</h3>
           {resumen_html}
           <div class="tarjeta-footer">
@@ -216,9 +221,10 @@ def construir_html(frentes, agentes, vault_zonas, generado_en):
         if a["tiene_bitacora"]:
             estado_memoria.append(f"Bitácora ({a['lineas_bitacora']} líneas)")
         estado_txt = " · ".join(estado_memoria) if estado_memoria else "Sin documentos de identidad detectados"
+        dot = "dot-on" if a["tiene_bitacora"] else "dot-off"
         filas_agentes.append(f"""
         <tr>
-          <td class="fila-label">{esc(a['nombre'])}</td>
+          <td class="fila-label"><i class="row-dot {dot}"></i>{esc(a['nombre'])}</td>
           <td>{esc(estado_txt)}</td>
           <td>{esc(fmt_fecha(a['ultima_modificacion']))}</td>
         </tr>""")
@@ -227,7 +233,8 @@ def construir_html(frentes, agentes, vault_zonas, generado_en):
     for z in vault_zonas:
         estado = f"{z['archivos_md']} notas" if z["existe"] else "No existe"
         clase = "" if z["existe"] else "fila-ausente"
-        filas_vault.append(f"<tr class='{clase}'><td class='fila-label'>{esc(z['zona'])}</td><td>{esc(estado)}</td></tr>")
+        dot = "dot-on" if z["existe"] else "dot-off"
+        filas_vault.append(f"<tr class='{clase}'><td class='fila-label'><i class='row-dot {dot}'></i>{esc(z['zona'])}</td><td>{esc(estado)}</td></tr>")
 
     return f"""<!DOCTYPE html>
 <html lang="es-MX">
@@ -237,60 +244,83 @@ def construir_html(frentes, agentes, vault_zonas, generado_en):
 <title>Sala de Control · IA-Crópolis</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 :root {{
-  --verde: #0F6B4C; --verde-oscuro: #0A4A34; --verde-suave: #E7F3EE;
-  --gris-950: #1B1F1D; --gris-700: #4A524D; --gris-500: #7C857F;
-  --gris-200: #E4E7E5; --gris-100: #F3F5F4; --blanco: #FFFFFF;
-  --amarillo: #B7791F; --amarillo-bg: #FBF2E3;
-  --rojo: #9C3B2E; --rojo-bg: #F8EBE9;
-  --font: 'Inter', -apple-system, sans-serif; --font-d: 'Manrope', var(--font);
+  --bg-deep:#060a14; --bg-mid:#0a1225; --bg-card:rgba(8,16,36,0.7);
+  --border:rgba(0,180,255,0.14); --border-hi:rgba(0,220,255,0.4);
+  --cyan:#00e0ff; --cyan2:#0af; --gold:#ffd866;
+  --green:#00ff88; --red:#ff4455; --orange:#ffaa00;
+  --text:#c8d6e5; --text-dim:#5a6d80; --text-bright:#eef4fa;
+  --font-ui:'Rajdhani',sans-serif; --font-brand:'Orbitron',sans-serif; --font-mono:'Share Tech Mono',monospace;
 }}
 * {{ box-sizing: border-box; }}
-body {{ margin:0; font-family: var(--font); color: var(--gris-950); background: var(--blanco); line-height: 1.5; }}
+body {{ margin:0; font-family: var(--font-ui); font-size:16px; color: var(--text); background: var(--bg-deep); line-height: 1.6;
+  background-image:
+    linear-gradient(rgba(0,140,220,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,140,220,0.05) 1px, transparent 1px);
+  background-size: 42px 42px;
+}}
 .wrap {{ max-width: 1100px; margin: 0 auto; padding: 0 20px; }}
-h1,h2,h3 {{ font-family: var(--font-d); font-weight: 800; margin: 0 0 10px; }}
-.header {{ background: linear-gradient(180deg, var(--verde-suave), var(--blanco)); padding: 40px 0 28px; border-bottom: 1px solid var(--gris-200); }}
-.header h1 {{ font-size: clamp(24px,5vw,34px); }}
-.header p {{ color: var(--gris-700); font-size: 13.5px; margin: 4px 0; }}
-.seccion {{ padding: 36px 0; }}
-.seccion.alt {{ background: var(--gris-100); }}
-.eyebrow {{ font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--verde); margin-bottom: 6px; }}
+h1,h2,h3 {{ font-family: var(--font-brand); font-weight: 700; margin: 0 0 10px; color: var(--text-bright); }}
+code {{ font-family: var(--font-mono); }}
+.header {{ background: linear-gradient(180deg, rgba(0,140,220,.08), transparent); padding: 44px 0 30px; border-bottom: 1px solid var(--border); position:relative; overflow:hidden; }}
+.header::after {{ content:''; position:absolute; bottom:-1px; left:0; width:100%; height:1px; background:linear-gradient(90deg,transparent,var(--cyan),var(--gold),var(--cyan),transparent); }}
+.header h1 {{ font-size: clamp(22px,4.5vw,32px); letter-spacing: 1px; background:linear-gradient(135deg,var(--gold),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }}
+.header p {{ color: var(--text-dim); font-size: 13.5px; margin: 4px 0; max-width: 760px; }}
+.header p strong {{ color: var(--text); }}
+.eyebrow {{ font-family: var(--font-mono); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .18em; color: var(--cyan); margin-bottom: 8px; }}
+.resumen-global {{ display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }}
+.pill {{ font-family: var(--font-mono); font-size:11.5px; padding:6px 12px; border:1px solid var(--border); border-radius:999px; background:var(--bg-card); color:var(--text); }}
+.pill b {{ color: var(--cyan); }}
+.seccion {{ padding: 40px 0; }}
+.seccion.alt {{ background: linear-gradient(180deg, rgba(0,60,110,.05), transparent); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }}
 .tarjetas {{ display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 20px; }}
 @media (min-width: 720px) {{ .tarjetas {{ grid-template-columns: repeat(3,1fr); }} }}
-.tarjeta {{ background: var(--blanco); border: 1px solid var(--gris-200); border-radius: 14px; padding: 20px; box-shadow: 0 4px 16px rgba(27,31,29,.06); }}
-.tarjeta-ausente {{ opacity: .7; border-style: dashed; }}
-.tarjeta-head {{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }}
-.numero {{ font-size:13px; font-weight:800; color:var(--verde); background:var(--verde-suave); padding:3px 10px; border-radius:999px; }}
-.chip {{ font-size:11px; font-weight:700; padding:3px 9px; border-radius:999px; }}
-.chip-ok {{ background: var(--verde-suave); color: var(--verde-oscuro); }}
-.chip-alerta {{ background: var(--amarillo-bg); color: var(--amarillo); }}
-.chip-ausente {{ background: var(--rojo-bg); color: var(--rojo); }}
-.tarjeta h3 {{ font-size: 16px; margin-bottom: 10px; }}
-.resumen {{ margin: 0 0 12px; padding-left: 18px; font-size: 13px; color: var(--gris-700); }}
+.tarjeta {{ background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; backdrop-filter: blur(6px); position:relative; overflow:hidden; transition: border-color .25s, transform .25s; }}
+.tarjeta::before {{ content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--cyan2),transparent); opacity:.6; }}
+.tarjeta:hover {{ border-color: var(--border-hi); transform: translateY(-2px); }}
+.tarjeta-ausente {{ opacity: .55; border-style: dashed; }}
+.tarjeta-head {{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:8px; flex-wrap:wrap; }}
+.numero {{ font-family: var(--font-brand); font-size:12px; font-weight:700; letter-spacing:1px; color:var(--bg-deep); background:var(--cyan); padding:3px 10px; border-radius:6px; }}
+.chip {{ display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:10.5px; font-weight:600; padding:3px 10px; border-radius:999px; border:1px solid var(--border); }}
+.chip-dot {{ width:6px; height:6px; border-radius:50%; display:inline-block; }}
+.chip-ok {{ color: var(--green); }} .chip-ok .chip-dot {{ background:var(--green); box-shadow:0 0 6px var(--green); }}
+.chip-alerta {{ color: var(--orange); }} .chip-alerta .chip-dot {{ background:var(--orange); box-shadow:0 0 6px var(--orange); }}
+.chip-ausente {{ color: var(--red); }} .chip-ausente .chip-dot {{ background:var(--red); box-shadow:0 0 6px var(--red); }}
+.tarjeta h3 {{ font-family: var(--font-ui); font-size: 17px; font-weight:700; margin-bottom: 10px; color: var(--text-bright); }}
+.resumen {{ margin: 0 0 12px; padding-left: 18px; font-size: 13.5px; color: var(--text-dim); }}
 .resumen li {{ margin-bottom: 4px; }}
-.nota {{ font-size: 12.5px; color: var(--gris-500); font-style: italic; }}
-.tarjeta-footer {{ display:flex; flex-wrap:wrap; gap:8px; padding-top:10px; border-top:1px solid var(--gris-200); margin-top: 8px;}}
-.meta {{ font-size: 11.5px; font-weight:600; color: var(--gris-700); background: var(--gris-100); padding:4px 8px; border-radius:6px; }}
-table {{ width:100%; border-collapse: collapse; margin-top: 16px; font-size: 13.5px; background: var(--blanco); border-radius: 12px; overflow: hidden; border: 1px solid var(--gris-200); }}
-th {{ background: var(--verde-oscuro); color: #fff; text-align:left; padding: 10px 12px; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; }}
-td {{ padding: 10px 12px; border-bottom: 1px solid var(--gris-200); color: var(--gris-700); }}
+.nota {{ font-size: 12.5px; color: var(--text-dim); font-style: italic; }}
+.tarjeta-footer {{ display:flex; flex-wrap:wrap; gap:8px; padding-top:12px; border-top:1px solid var(--border); margin-top: 10px; }}
+.meta {{ font-family: var(--font-mono); font-size: 11px; font-weight:600; color: var(--text-dim); background: rgba(255,255,255,.03); padding:4px 8px; border-radius:6px; }}
+table {{ width:100%; border-collapse: collapse; margin-top: 18px; font-size: 13.5px; background: var(--bg-card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }}
+th {{ background: rgba(0,180,255,.08); color: var(--cyan); text-align:left; padding: 11px 14px; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; border-bottom:1px solid var(--border); }}
+td {{ padding: 11px 14px; border-bottom: 1px solid rgba(255,255,255,.04); color: var(--text-dim); }}
 tr:last-child td {{ border-bottom: none; }}
-tr:nth-child(even) td {{ background: var(--gris-100); }}
-.fila-label {{ font-weight: 700; color: var(--gris-950); }}
-.fila-ausente td {{ color: var(--gris-500); font-style: italic; }}
-.footer {{ text-align:center; padding: 24px 0; color: var(--gris-500); font-size: 12px; border-top: 1px solid var(--gris-200); }}
+tr:hover td {{ background: rgba(0,180,255,.04); color: var(--text); }}
+.fila-label {{ font-weight: 700; color: var(--text-bright); display:flex; align-items:center; gap:8px; }}
+.row-dot {{ width:7px; height:7px; border-radius:50%; display:inline-block; flex-shrink:0; }}
+.dot-on {{ background: var(--green); box-shadow:0 0 5px var(--green); }}
+.dot-off {{ background: var(--text-dim); }}
+.fila-ausente td {{ color: var(--text-dim); font-style: italic; opacity:.6; }}
+.footer {{ text-align:center; padding: 26px 0; color: var(--text-dim); font-family: var(--font-mono); font-size: 11px; border-top: 1px solid var(--border); }}
 </style>
 </head>
 <body>
 
 <header class="header">
   <div class="wrap">
-    <p class="eyebrow">🐝 Sala de Control · IA-Crópolis</p>
+    <p class="eyebrow">◈ Sala de Control · IA-Crópolis</p>
     <h1>Dashboard General del Ecosistema</h1>
-    <p>Generado bajo demanda — no es un proceso en vivo. Refleja el disco real al momento en que se corrió el generador. Sujeto a Kaizen-Ouroboros: se regenera cuando se pide, no memoriza entre corridas.</p>
+    <p>Generado bajo demanda a partir del disco real — no es un proceso en vivo ni memoriza nada entre corridas. Sujeto a Kaizen-Ouroboros: se regenera cuando se pide.</p>
     <p><strong>Última generación:</strong> {esc(generado_en)}</p>
+    <div class="resumen-global">
+      <span class="pill">Frentes en disco: <b>{frentes_ok}/{len(frentes)}</b></span>
+      <span class="pill">Con índice real: <b>{frentes_con_indice}/{frentes_ok}</b></span>
+      <span class="pill">Agentes con bitácora: <b>{agentes_con_bitacora}/{len(agentes)}</b></span>
+      <span class="pill">Notas en el Vault: <b>{vault_total_notas}</b></span>
+    </div>
   </div>
 </header>
 
@@ -329,7 +359,7 @@ tr:nth-child(even) td {{ background: var(--gris-100); }}
 </main>
 
 <footer class="footer">
-  <div class="wrap">Generado automáticamente por <code>generar_dashboard.py</code> · IA-Crópolis</div>
+  <div class="wrap">GENERADO POR generar_dashboard.py · IA-CRÓPOLIS · DATOS REALES, SIN INVENCIÓN</div>
 </footer>
 
 </body>
