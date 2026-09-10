@@ -13,7 +13,7 @@
   --border:rgba(0,180,255,0.14); --border-hi:rgba(0,220,255,0.4);
   --cyan:#00e0ff; --cyan2:#0af; --gold:#ffd866;
   --green:#00ff88; --red:#ff4455; --orange:#ffaa00;
-  --text:#c8d6e5; --text-dim:#5a6d80; --text-bright:#eef4fa;
+  --text:#dbe6f0; --text-dim:#94a7bd; --text-bright:#f4f8fc;
   --font-ui:'Rajdhani',sans-serif; --font-brand:'Orbitron',sans-serif; --font-mono:'Share Tech Mono',monospace;
 }
 * { box-sizing: border-box; }
@@ -29,7 +29,7 @@ code { font-family: var(--font-mono); }
 .header { background: linear-gradient(180deg, rgba(0,140,220,.08), transparent); padding: 44px 0 30px; border-bottom: 1px solid var(--border); position:relative; overflow:hidden; }
 .header::after { content:''; position:absolute; bottom:-1px; left:0; width:100%; height:1px; background:linear-gradient(90deg,transparent,var(--cyan),var(--gold),var(--cyan),transparent); }
 .header h1 { font-size: clamp(22px,4.5vw,32px); letter-spacing: 1px; background:linear-gradient(135deg,var(--gold),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-.header p { color: var(--text-dim); font-size: 13.5px; margin: 4px 0; max-width: 760px; }
+.header p { color: var(--text); font-size: 14.5px; margin: 4px 0; max-width: 760px; }
 .header p strong { color: var(--text); }
 .eyebrow { font-family: var(--font-mono); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .18em; color: var(--cyan); margin-bottom: 8px; }
 .resumen-global { display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
@@ -51,14 +51,14 @@ code { font-family: var(--font-mono); }
 .chip-alerta { color: var(--orange); } .chip-alerta .chip-dot { background:var(--orange); box-shadow:0 0 6px var(--orange); }
 .chip-ausente { color: var(--red); } .chip-ausente .chip-dot { background:var(--red); box-shadow:0 0 6px var(--red); }
 .tarjeta h3 { font-family: var(--font-ui); font-size: 17px; font-weight:700; margin-bottom: 10px; color: var(--text-bright); }
-.resumen { margin: 0 0 12px; padding-left: 18px; font-size: 13.5px; color: var(--text-dim); }
-.resumen li { margin-bottom: 4px; }
-.nota { font-size: 12.5px; color: var(--text-dim); font-style: italic; }
+.resumen { margin: 0 0 12px; padding-left: 18px; font-size: 14.5px; line-height:1.55; color: var(--text); }
+.resumen li { margin-bottom: 6px; }
+.nota { font-size: 13.5px; color: var(--text-dim); font-style: italic; }
 .tarjeta-footer { display:flex; flex-wrap:wrap; gap:8px; padding-top:12px; border-top:1px solid var(--border); margin-top: 10px; }
-.meta { font-family: var(--font-mono); font-size: 11px; font-weight:600; color: var(--text-dim); background: rgba(255,255,255,.03); padding:4px 8px; border-radius:6px; }
-table { width:100%; border-collapse: collapse; margin-top: 18px; font-size: 13.5px; background: var(--bg-card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
-th { background: rgba(0,180,255,.08); color: var(--cyan); text-align:left; padding: 11px 14px; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; border-bottom:1px solid var(--border); }
-td { padding: 11px 14px; border-bottom: 1px solid rgba(255,255,255,.04); color: var(--text-dim); }
+.meta { font-family: var(--font-mono); font-size: 11.5px; font-weight:600; color: var(--text); background: rgba(255,255,255,.05); padding:4px 8px; border-radius:6px; }
+table { width:100%; border-collapse: collapse; margin-top: 18px; font-size: 14.5px; background: var(--bg-card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+th { background: rgba(0,180,255,.08); color: var(--cyan); text-align:left; padding: 11px 14px; font-family: var(--font-mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; border-bottom:1px solid var(--border); }
+td { padding: 11px 14px; border-bottom: 1px solid rgba(255,255,255,.04); color: var(--text); }
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: rgba(0,180,255,.04); color: var(--text); }
 .fila-label { font-weight: 700; color: var(--text-bright); display:flex; align-items:center; gap:8px; }
@@ -76,7 +76,7 @@ tr:hover td { background: rgba(0,180,255,.04); color: var(--text); }
     <p class="eyebrow">◈ Sala de Control · IA-Crópolis</p>
     <h1>Dashboard General del Ecosistema</h1>
     <p>Generado bajo demanda a partir del disco real — no es un proceso en vivo ni memoriza nada entre corridas. Sujeto a Kaizen-Ouroboros: se regenera cuando se pide.</p>
-    <p><strong>Última generación:</strong> 2026-09-10 12:05</p>
+    <p><strong>Última generación:</strong> 2026-09-10 12:45</p>
     <div class="resumen-global">
       <span class="pill">Frentes en disco: <b>6/6</b></span>
       <span class="pill">Con índice real: <b>6/6</b></span>
