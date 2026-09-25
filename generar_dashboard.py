@@ -31,7 +31,7 @@ ORGANIGRAMA = [
     ("Capa 0 · Autoridad", [("Alfred", "Autoridad final")]),
     ("Capa 1 · Concilio", [
         ("Gemini", "Orquestadora Prime"),
-        ("Claude", "Arquitecta Prime"),
+        ("Claude", "Auditora Arquitectónica Prime"),
         ("ChatGPT", "Auditora Comercial Prime"),
     ]),
     ("Capa 1.5 · Fuerza de Asalto Táctico", [
@@ -40,7 +40,7 @@ ORGANIGRAMA = [
         ("Claude Cowork", "Operadora de Frontera"),
     ]),
     ("Capa 2 · Brazos Ejecutores (activos)", [
-        ("Claude Code", "Arquitecta y Auditora del ecosistema"),
+        ("Claude Code", "Arquitecta y Auditora de la IA-Crópolis"),
         ("Antigravity", "Director Agéntico (con La Cuadrilla Mexa)"),
         ("Cline", "Diagnóstico de infraestructura"),
         ("Hermes", "Agente local multiherramienta"),
