@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Sala de Control · Dashboard general IA-Crópolis (v2, 18-sep-2026).
+"""Sala de Control · Dashboard general IA-Crópolis (v3, 25-sep-2026).
 
 Versión PÚBLICA-SEGURA: no lee el contenido de los Frentes. Muestra solo:
-  1) Organigrama actual (fuente: Constitución v7.7, sección VII)
+  1) Organigrama actual (leído EN VIVO de la Constitución, sección VII —
+     ya no es una lista escrita a mano; Fase 1 de la Reconstrucción del
+     Ecosistema, mismo principio que documentacion/core/generar_mapa.py)
   2) Salud / estado actual (solo conteos y fechas verificables)
   3) Frentes (nombre y descripción de FRENTES-REFERENCIA.md; métricas N/D)
 
@@ -21,40 +23,77 @@ RAIZ = AQUI.parents[2]  # .../IA-CROPOLIS
 ACTIVOS = RAIZ / "activos-negocios"
 AGENTES = RAIZ / "AGENTES-IA" / "AGENTES ACTIVOS"
 VAULT = RAIZ / "conocimiento" / "obsidian"
+CONSTITUCION = RAIZ / "documentacion" / "core" / "CONSTITUCIÓN_IA-CRÓPOLIS_v7.7.md"
 REFERENCIA = RAIZ / "documentacion" / "core" / "FRENTES-REFERENCIA.md"
 RESPALDO_MARCA = Path("D:/RESPALDOS-IA-CROPOLIS/IA-CROPOLIS-ACTUAL/ULTIMO-RESPALDO.txt")
 SALIDA_HTML = AQUI / "index.html"
 SALIDA_MD = AQUI / "estado.md"
 
-# Organigrama vigente. Fuente: Constitución IA-Crópolis v7.7, sección VII.
-ORGANIGRAMA = [
-    ("Capa 0 · Autoridad", [("Alfred", "Autoridad final")]),
-    ("Capa 1 · Concilio", [
-        ("Gemini", "Orquestadora Prime"),
-        ("Claude", "Auditora Arquitectónica Prime"),
-        ("ChatGPT", "Auditora Comercial Prime"),
-    ]),
-    ("Capa 1.5 · Fuerza de Asalto Táctico", [
-        ("Grok", "Consultora Creativa y de Asalto"),
-        ("Meta Muse", "Estratega de Tráfico Meta"),
-        ("Claude Cowork", "Operadora de Frontera"),
-    ]),
-    ("Capa 2 · Brazos Ejecutores (activos)", [
-        ("Claude Code", "Arquitecta y Auditora de la IA-Crópolis"),
-        ("Antigravity", "Director Agéntico (con La Cuadrilla Mexa)"),
-        ("Cline", "Diagnóstico de infraestructura"),
-        ("Hermes", "Agente local multiherramienta"),
-        ("Qwen", "Análisis forense y auditoría de calidad"),
-        ("Gemini Spark", "Automatización Google Workspace"),
-        ("OpenCode", "Desarrollo multi-modelo"),
-        ("Ollama", "Modelos locales"),
-    ]),
-    ("Capa 3 · Reserva Estratégica", [
-        ("DeepSeek", ""), ("Kimi", ""), ("Mavis", ""), ("Fable 5", ""),
-        ("Meta AI", ""), ("Comet", ""), ("Manus", ""), ("Genspark", ""),
-        ("Codex", ""), ("Z Code", ""), ("NotebookLM", ""), ("Accio Work", ""),
-    ]),
+# Encabezados reales de la seccion VII de la Constitucion, en orden.
+# Si algun dia cambia el texto de un encabezado en la Constitucion, este
+# parser deja de encontrar esa capa -- se nota de inmediato (lista vacia
+# en el dashboard), nunca falla en silencio con datos viejos.
+_CAPAS = [
+    ("Capa 1 · Concilio", "### 🏛️ CAPA 1"),
+    ("Capa 1.5 · Fuerza de Asalto Táctico", "### 🪓 CAPA 1.5"),
+    ("Capa 2 · Brazos Ejecutores (activos)", "### ⚙️ CAPA 2"),
+    ("Capa 3 · Reserva Estratégica", "### 🔘 CAPA 3"),
 ]
+_FILA = re.compile(r"^\|\s*\*\*(.+?)\*\*[^|]*\|(.+)\|(.+)\|\s*$")
+
+
+def _valido(col: str) -> bool:
+    col = col.strip()
+    return bool(col) and col not in ("—", "-", "–") and not col.startswith("---")
+
+
+def leer_organigrama():
+    """Lee la seccion VII de la Constitucion en vivo -- Capa 0 se deja
+    fija (nunca esta en una tabla), las demas capas se extraen tal cual
+    esten hoy. Ningun nombre/rol se escribe aqui a mano."""
+    if not CONSTITUCION.exists():
+        return [("Capa 0 · Autoridad", [("Alfred", "Autoridad final")])]
+    texto = CONSTITUCION.read_text(encoding="utf-8")
+    marcadores = [m for _, m in _CAPAS] + ["## VII-B."]
+    organigrama = [("Capa 0 · Autoridad", [("Alfred", "Autoridad final")])]
+    for i, (etiqueta, marcador) in enumerate(_CAPAS):
+        ini = texto.find(marcador)
+        if ini == -1:
+            organigrama.append((etiqueta, []))
+            continue
+        fin = len(texto)
+        for m2 in marcadores[i + 1:]:
+            pos = texto.find(m2, ini + 1)
+            if pos != -1:
+                fin = min(fin, pos)
+        bloque = texto[ini:fin]
+        nodos = []
+        if etiqueta.startswith("Capa 3"):
+            # Capa 3 es una lista plana "A · B · C", no una tabla.
+            for linea in bloque.splitlines():
+                linea = linea.strip()
+                if linea.startswith("###") or not linea or linea.startswith(("**", ">", "#")):
+                    continue
+                nodos = [(n.strip(), "") for n in linea.split("·") if n.strip()]
+                break
+        else:
+            # La tabla de Capa 2 tiene otra forma de columnas: Agente |
+            # Modelo/Plataforma | Especialidad -- la col2 es el modelo,
+            # no un rol. Las demas tablas van Nodo | Rol | Plataforma,
+            # donde la col2 SI es el rol. Cada tabla se lee segun su
+            # propia forma real, no se le impone una ajena.
+            es_capa2 = etiqueta.startswith("Capa 2")
+            for linea in bloque.splitlines():
+                m3 = _FILA.match(linea.strip())
+                if not m3:
+                    continue
+                nombre, col2, col3 = m3.group(1).strip(), m3.group(2).strip(), m3.group(3).strip()
+                if nombre.lower() in ("nodo", "agente"):
+                    continue
+                rol = col3 if es_capa2 else " · ".join(p for p in (col2, col3) if _valido(p))
+                nodos.append((nombre, rol))
+        organigrama.append((etiqueta, nodos))
+    return organigrama
 
 
 def esc(s):
@@ -135,11 +174,20 @@ def salud():
     ]
 
 
-def construir_html(frentes, checks, generado):
+def _titulo_corto(rol: str) -> str:
+    """La tarjeta es un chip compacto, no un párrafo -- solo el título
+    corto. El detalle completo (fechas, contexto, notas) vive en
+    estado.md, que sí tiene espacio para leerse como texto."""
+    corto = rol.split(" (")[0].split(" · ")[0]
+    return corto.replace("**", "").strip()
+
+
+def construir_html(organigrama, frentes, checks, generado):
     org = ""
-    for capa, nodos in ORGANIGRAMA:
+    for capa, nodos in organigrama:
         chips = "".join(
-            f'<div class="nodo"><b>{esc(n)}</b>' + (f"<span>{esc(r)}</span>" if r else "") + "</div>"
+            f'<div class="nodo"><b>{esc(n)}</b>'
+            + (f"<span>{esc(_titulo_corto(r))}</span>" if r else "") + "</div>"
             for n, r in nodos)
         org += f'<div class="capa"><h3>{esc(capa)}</h3><div class="nodos">{chips}</div></div>'
     sal = "".join(
@@ -183,11 +231,11 @@ footer{{margin-top:36px;color:var(--mut);font-size:14px;border-top:1px solid var
 </main></body></html>"""
 
 
-def construir_md(frentes, checks, generado):
+def construir_md(organigrama, frentes, checks, generado):
     L = ["# ESTADO COMPARTIDO · IA-Crópolis", "", f"Generado: {generado}",
-         "Fuente: Constitución v7.7 (organigrama) y conteos verificables del disco local.", "",
+         "Fuente: Constitución v7.7 (organigrama, leído en vivo) y conteos verificables del disco local.", "",
          "## 1. ORGANIGRAMA ACTUAL", ""]
-    for capa, nodos in ORGANIGRAMA:
+    for capa, nodos in organigrama:
         L.append(f"**{capa}**")
         for n, r in nodos:
             L.append(f"- {n}" + (f": {r}" if r else ""))
@@ -204,10 +252,12 @@ def construir_md(frentes, checks, generado):
 
 def main():
     generado = datetime.now().strftime("%Y-%m-%d %H:%M")
+    organigrama = leer_organigrama()
     frentes, checks = leer_frentes(), salud()
-    SALIDA_HTML.write_text(construir_html(frentes, checks, generado), encoding="utf-8")
-    SALIDA_MD.write_text(construir_md(frentes, checks, generado), encoding="utf-8")
-    print(f"index.html y estado.md generados ({len(frentes)} frentes, {len(checks)} indicadores)")
+    SALIDA_HTML.write_text(construir_html(organigrama, frentes, checks, generado), encoding="utf-8")
+    SALIDA_MD.write_text(construir_md(organigrama, frentes, checks, generado), encoding="utf-8")
+    print(f"index.html y estado.md generados ({len(frentes)} frentes, {len(checks)} indicadores, "
+          f"{sum(len(n) for _, n in organigrama)} nodos en el organigrama)")
 
 
 if __name__ == "__main__":
