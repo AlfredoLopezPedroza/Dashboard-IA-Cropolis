@@ -174,6 +174,19 @@ def salud():
     ]
 
 
+def resumen_semaforo(checks):
+    """Fase 5 (exoesqueleto): un solo indicador de un vistazo, calculado
+    de los mismos checks de salud que ya existen -- no inventa un umbral
+    nuevo, solo resume los que ya se verifican contra el disco."""
+    fallando = [k for k, _, ok in checks if not ok]
+    total, malos = len(checks), len(fallando)
+    if malos == 0:
+        return "ok", "🟢 SANO", "Los 5 indicadores de salud están al día.", fallando
+    if malos <= total // 2:
+        return "revisar", "🟡 REVISAR", f"{malos} de {total} indicadores sin verificar: " + ", ".join(fallando) + ".", fallando
+    return "atencion", "🔴 ATENCIÓN", f"{malos} de {total} indicadores sin verificar: " + ", ".join(fallando) + ".", fallando
+
+
 def _titulo_corto(rol: str) -> str:
     """La tarjeta es un chip compacto, no un párrafo -- solo el título
     corto. El detalle completo (fechas, contexto, notas) vive en
@@ -183,6 +196,7 @@ def _titulo_corto(rol: str) -> str:
 
 
 def construir_html(organigrama, frentes, checks, generado):
+    estado_sem, etiqueta_sem, detalle_sem, _ = resumen_semaforo(checks)
     org = ""
     for capa, nodos in organigrama:
         chips = "".join(
@@ -220,10 +234,17 @@ h3{{margin:0 0 8px;font-size:15px;color:var(--mut);font-weight:600;text-transfor
 .k{{color:var(--mut);font-size:14px}}.v{{font:700 22px Orbitron,sans-serif}}
 .frente .cod{{color:var(--cy);font:700 13px Orbitron,sans-serif}}.frente p{{margin:2px 0 6px;color:var(--txt)}}
 .met{{color:var(--nd);font-size:14px}}
+.semaforo{{border-radius:14px;padding:16px 18px;margin:14px 0 8px;border:1px solid var(--linea)}}
+.semaforo.ok{{background:rgba(61,220,151,.1);border-color:var(--ok)}}
+.semaforo.revisar{{background:rgba(240,180,41,.1);border-color:var(--nd)}}
+.semaforo.atencion{{background:rgba(255,90,90,.12);border-color:#ff5a5a}}
+.semaforo .lbl{{font:700 22px Orbitron,sans-serif;letter-spacing:.04em}}
+.semaforo p{{margin:6px 0 0;color:var(--txt)}}
 footer{{margin-top:36px;color:var(--mut);font-size:14px;border-top:1px solid var(--linea);padding-top:12px}}
 </style></head><body><main>
 <h1>SALA DE CONTROL · IA-CRÓPOLIS</h1>
 <p class="sub">Foto generada: {esc(generado)} · solo lectura</p>
+<div class="semaforo {estado_sem}"><div class="lbl">{esc(etiqueta_sem)}</div><p>{esc(detalle_sem)}</p></div>
 <h2>1 · ORGANIGRAMA ACTUAL</h2>{org}
 <h2>2 · SALUD Y ESTADO</h2><div class="grid">{sal}</div>
 <h2>3 · FRENTES</h2><div class="grid">{fr}</div>
@@ -232,8 +253,10 @@ footer{{margin-top:36px;color:var(--mut);font-size:14px;border-top:1px solid var
 
 
 def construir_md(organigrama, frentes, checks, generado):
+    _, etiqueta_sem, detalle_sem, _ = resumen_semaforo(checks)
     L = ["# ESTADO COMPARTIDO · IA-Crópolis", "", f"Generado: {generado}",
          "Fuente: Constitución v7.7 (organigrama, leído en vivo) y conteos verificables del disco local.", "",
+         f"## {etiqueta_sem}", "", detalle_sem, "",
          "## 1. ORGANIGRAMA ACTUAL", ""]
     for capa, nodos in organigrama:
         L.append(f"**{capa}**")
