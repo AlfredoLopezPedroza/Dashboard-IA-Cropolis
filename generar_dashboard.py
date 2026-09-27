@@ -5,7 +5,7 @@
 Versión PÚBLICA-SEGURA: no lee el contenido de los Frentes. Muestra solo:
   1) Organigrama actual (leído EN VIVO de la Constitución, sección VII —
      ya no es una lista escrita a mano; Fase 1 de la Reconstrucción del
-     Ecosistema, mismo principio que documentacion/core/generar_mapa.py)
+     Ecosistema, mismo principio que documentacion/core/mapa-estructural/generar_mapa.py)
   2) Salud / estado actual (solo conteos y fechas verificables)
   3) Frentes (nombre y descripción de FRENTES-REFERENCIA.md; métricas N/D)
 

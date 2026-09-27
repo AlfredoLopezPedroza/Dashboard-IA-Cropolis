@@ -1,6 +1,6 @@
 # ESTADO COMPARTIDO · IA-Crópolis
 
-Generado: 2026-09-26 14:22
+Generado: 2026-09-27 12:29
 Fuente: Constitución v7.7 (organigrama, leído en vivo) y conteos verificables del disco local.
 
 ## 🟢 SANO
@@ -42,7 +42,7 @@ Los 5 indicadores de salud están al día.
 - Frentes con índice documentado: 6 / 6
 - Agentes activos con bitácora: 4 / 4
 - Notas en el Laboratorio Cognitivo: 100
-- Último commit del cerebro: 2026-09-26
+- Último commit del cerebro: 2026-09-27
 - Último respaldo verificado: 2026-09-22 20:15
 
 ## 3. FRENTES
